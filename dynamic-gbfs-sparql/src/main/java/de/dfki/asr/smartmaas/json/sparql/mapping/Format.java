@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package de.dfki.asr.smartmass.json.sparql.mapping;
+package de.dfki.asr.smartmaas.json.sparql.mapping;
 
 /**
  *

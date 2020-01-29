@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package de.dfki.asr.smartmass.json.sparql.mapping;
+package de.dfki.asr.smartmaas.json.sparql.mapping;
 
 import lombok.Getter;
 import org.eclipse.rdf4j.rio.RDFFormat;
@@ -15,7 +15,7 @@ import org.eclipse.rdf4j.rio.RDFFormat;
 public class Mapping extends Input {
 
 	@Getter
-	private RDFFormat format;
+	private final RDFFormat format;
 
 	public Mapping(String text, RDFFormat format) {
 		this.text = text;
