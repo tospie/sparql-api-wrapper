@@ -20,14 +20,16 @@ import org.eclipse.rdf4j.sail.memory.MemoryStore;
  */
 public class QueryExecutor {
 
-	public QueryResult queryModel(Model model, String query) {
+	public TupleQueryResult queryModel(Model model, String query) {
 		/* TODO : Pass type of performed query and add support for Queries beyond SELECT*/
 
 		Repository tempRepo = new SailRepository(new MemoryStore());
+		tempRepo.initialize();
 		RepositoryConnection connection = tempRepo.getConnection();
 		connection.add(model);
 		TupleQuery sparqlQuery = connection.prepareTupleQuery(query);
 		TupleQueryResult result = sparqlQuery.evaluate();
+		// tempRepo.shutDown();
 		return result;
 	}
 }

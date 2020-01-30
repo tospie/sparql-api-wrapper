@@ -21,6 +21,8 @@ import javax.servlet.http.HttpServletRequest;
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.Statement;
 import org.eclipse.rdf4j.model.util.Models;
+import org.eclipse.rdf4j.query.BindingSet;
+import org.eclipse.rdf4j.query.TupleQueryResult;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.RDFHandlerException;
 import org.eclipse.rdf4j.rio.RDFWriter;
@@ -49,15 +51,16 @@ public class ApplicationController {
 		String source = Builder.getContent(sourceUri);
 
 		Model mappedModel = carmlMapper.map(new Mapping(mapping, RDFFormat.TURTLE), new Data(source, Format.JSON));
-		// String result = new QueryExecutor().queryModel(mappedModel, query).toString();
+		TupleQueryResult queryResult = new QueryExecutor().queryModel(mappedModel, query);
 
-		return "<table border=2><tr><td>Query: " + request.getParameter(
-				"query")
-				+ "</td><td> Mapping<br><br> : " + mapping.replace("\n", "<br>").replace(" ", "&nbsp;")
-				+ "</td><td> Source<br><br> : " + source.replace("\n", "<br>").replace(" ", "&nbsp;")
-				+ "</td></tr><tr><td>Mapping Result : <textarea rows='10' cols='90'>" + modelToTtl(mappedModel) + "</textarea>"
-				+ "</td><<td></td><td></td></tr></table>"
-				; //+  "<br><br>Result : "; //+ result;
+		return "<table border=2><tr>"
+				+ "<td> Source<br><br> : " + source.replace("\n", "<br>").replace(" ", "&nbsp;") + "</td>"
+				+ "<td> Mapping<br><br> : " + mapping.replace("\n", "<br>").replace(" ", "&nbsp;") + "</td>"
+				+ "<td>Mapping Result : <textarea rows='10' cols='90'>" + modelToTtl(mappedModel) + "</textarea></td>"
+				+ "</tr><tr>"
+				+ "<td>Query: " + request.getParameter("query")
+				+ "</td><td>Result : " + printResult(queryResult)
+				+ "</td><td></td></tr></table>";
 	}
 
 	private OutputStream modelToTtl(final Model result) throws UnsupportedRDFormatException, RDFHandlerException {
@@ -69,6 +72,18 @@ public class ApplicationController {
 			rdfWriter.handleStatement(st);
 		}
 		rdfWriter.endRDF();
+		return output;
+	}
+
+	private String printResult(TupleQueryResult result) {
+		String output = "";
+		while (result.hasNext()) {
+			BindingSet next = result.next();
+			output += "<br>";
+			for (String n : next.getBindingNames()) {
+				output += "[" + n + ":" + next.getValue(n) + "]";
+			}
+		}
 		return output;
 	}
 
