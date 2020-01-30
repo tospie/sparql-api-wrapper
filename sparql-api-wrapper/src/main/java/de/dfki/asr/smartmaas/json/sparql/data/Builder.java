@@ -6,8 +6,13 @@
 package de.dfki.asr.smartmaas.json.sparql.data;
 
 import de.dfki.asr.smartmaas.json.sparql.network.RequestProxy;
+import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -15,14 +20,23 @@ import java.net.URL;
  */
 public abstract class Builder {
 
-	public String getContent(String parameter) {
+	public static String getContent(String parameter) {
 		try {
-			URL targetUrl = new URL(parameter);
+			URI targetUrl = new URI(parameter);
 			return RequestProxy.Request(targetUrl).getContent();
 		} catch (MalformedURLException e) {
 			// for now, we assume that whenever a parameter is not a valid URI,
 			// it is validly submitted data and pass it as such
-			return parameter;
+			return "[[BUILDER ERROR (de.dfki.asr.smartmaas.json.sparql.data.Builder)] Failed to Request Content due to malformed target URL '"
+					+ parameter + "': "
+					+ e.getMessage();
+		} catch (IOException e) {
+			return "[BUILDER ERROR (de.dfki.asr.smartmaas.json.sparql.data.Builder)] Failed to Request Content due to following reason : "
+					+ e.getMessage();
+		} catch (URISyntaxException ex) {
+			return "[BUILDER ERROR (de.dfki.asr.smartmaas.json.sparql.data.Builder)] Malformed URI: " + ex.getMessage();
+		} catch (InterruptedException ex) {
+			return "[BUILDER ERROR (de.dfki.asr.smartmaas.json.sparql.data.Builder)] Interrupt while performin HTTP Request: " + ex.getMessage();
 		}
 	}
 }
