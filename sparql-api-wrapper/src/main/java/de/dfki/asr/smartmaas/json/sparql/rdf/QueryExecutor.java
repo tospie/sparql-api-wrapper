@@ -6,7 +6,6 @@
 package de.dfki.asr.smartmaas.json.sparql.rdf;
 
 import org.eclipse.rdf4j.model.Model;
-import org.eclipse.rdf4j.query.QueryResult;
 import org.eclipse.rdf4j.query.TupleQuery;
 import org.eclipse.rdf4j.query.TupleQueryResult;
 import org.eclipse.rdf4j.repository.Repository;
