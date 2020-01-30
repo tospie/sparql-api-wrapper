@@ -56,8 +56,8 @@ public class ApplicationController {
 				+ "<td> Mapping<br><br> : " + mapping.replace("\n", "<br>").replace(" ", "&nbsp;") + "</td>"
 				+ "<td>Mapping Result : <textarea rows='10' cols='90'>" + modelToTtl(mappedModel) + "</textarea></td>"
 				+ "</tr><tr>"
-				+ "<td>Query: " + request.getParameter("query")
-				+ "</td><td>Result : " + printResult(queryResult)
+				+ "<td>Query: <textarea rows='5' cols='50'>" + request.getParameter("query") + "</textarea>"
+				+ "</td><td>Result : <textarea rows='5' cols='50'>" + printResult(queryResult) + "</textarea>"
 				+ "</td><td></td></tr></table>";
 	}
 
@@ -77,7 +77,7 @@ public class ApplicationController {
 		String output = "";
 		while (result.hasNext()) {
 			BindingSet next = result.next();
-			output += "<br>";
+			output += "\n";
 			for (String n : next.getBindingNames()) {
 				output += "[" + n + ":" + next.getValue(n) + "]";
 			}
