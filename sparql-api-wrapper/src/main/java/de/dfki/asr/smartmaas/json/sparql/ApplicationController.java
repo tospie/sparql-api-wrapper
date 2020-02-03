@@ -27,6 +27,7 @@ import org.eclipse.rdf4j.rio.RDFWriter;
 import org.eclipse.rdf4j.rio.Rio;
 import org.eclipse.rdf4j.rio.UnsupportedRDFormatException;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -65,6 +66,7 @@ public class ApplicationController {
 		OutputStream output = new ByteArrayOutputStream();
 		RDFWriter rdfWriter = Rio.createWriter(RDFFormat.TURTLE,
 				output);
+
 		rdfWriter.startRDF();
 		for (Statement st : result) {
 			rdfWriter.handleStatement(st);
@@ -85,10 +87,15 @@ public class ApplicationController {
 		return output;
 	}
 
-	@GetMapping("/mapping")
-	String getMapping() {
+	@GetMapping("/mapping/{id}")
+	String getMapping(@PathVariable String id) {
 		try {
-			return readFileContent("mapping.ttl");
+			switch (id) {
+				case "gbfs":
+					return readFileContent("gbfs_free_bikes_mapping.ttl");
+				default:
+					return readFileContent("mapping.ttl");
+			}
 		} catch (IOException ex) {
 			return "[SERVER PATH ERROR(de.dfki.asr.smartmaas.json.sparql.ApplicationController)]"
 					+ " Failed to Request Content due to following reason : " + ex.getMessage();
