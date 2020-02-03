@@ -7,13 +7,9 @@ package de.dfki.asr.smartmaas.json.sparql.rdf;
 
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
-import java.util.Map;
-import org.eclipse.rdf4j.model.Model;
-import org.eclipse.rdf4j.model.Statement;
 import org.eclipse.rdf4j.query.BindingSet;
 import org.eclipse.rdf4j.query.GraphQueryResult;
 import org.eclipse.rdf4j.query.QueryResult;
-import org.eclipse.rdf4j.query.QueryResults;
 import org.eclipse.rdf4j.query.TupleQueryResult;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.RDFWriter;
@@ -37,6 +33,7 @@ public class QueryResultSerializer {
 
 	private String serialize(TupleQueryResult result) {
 		String output = "";
+
 		while (result.hasNext()) {
 			BindingSet next = result.next();
 			output += "\n";
@@ -53,9 +50,9 @@ public class QueryResultSerializer {
 				output);
 
 		rdfWriter.startRDF();
-		for (Map.Entry<String, String> ns : result.getNamespaces().entrySet()) {
+		result.getNamespaces().entrySet().forEach((ns) -> {
 			rdfWriter.handleNamespace(ns.getKey(), ns.getValue());
-		}
+		});
 		while (result.hasNext()) {
 			rdfWriter.handleStatement(result.next());
 		}
