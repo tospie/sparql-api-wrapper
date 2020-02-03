@@ -6,10 +6,14 @@
 package de.dfki.asr.smartmaas.json.sparql.rdf;
 
 import org.eclipse.rdf4j.model.Model;
+import org.eclipse.rdf4j.query.BooleanQuery;
+import org.eclipse.rdf4j.query.GraphQuery;
+import org.eclipse.rdf4j.query.GraphQueryResult;
 import org.eclipse.rdf4j.query.QueryLanguage;
-import org.eclipse.rdf4j.query.QueryResult;
 import org.eclipse.rdf4j.query.TupleQuery;
 import org.eclipse.rdf4j.query.TupleQueryResult;
+import org.eclipse.rdf4j.query.parser.ParsedBooleanQuery;
+import org.eclipse.rdf4j.query.parser.ParsedGraphQuery;
 import org.eclipse.rdf4j.query.parser.ParsedOperation;
 import org.eclipse.rdf4j.query.parser.ParsedTupleQuery;
 import org.eclipse.rdf4j.query.parser.QueryParserUtil;
@@ -24,26 +28,46 @@ import org.eclipse.rdf4j.sail.memory.MemoryStore;
  */
 public class QueryExecutor {
 
-	public <T extends QueryResult> T queryModel(Model model, String query) {
+	QueryResultSerializer serializer = new QueryResultSerializer();
+
+	public String queryModel(Model model, String query) {
+		RepositoryConnection connection = connectToTempRepo(model);
 		ParsedOperation operation = QueryParserUtil.parseOperation(QueryLanguage.SPARQL, query, null);
 		if (operation instanceof ParsedTupleQuery) {
-			return (T) performTupleQuery(model, query);
+			return serializer.serialize(performTupleQuery(connection, query));
+		} else if (operation instanceof ParsedGraphQuery) {
+			return serializer.serialize(performGraphQuery(connection, query));
+		} else if (operation instanceof ParsedBooleanQuery) {
+			boolean result = performBooleanQuery(connection, query);
+			return result ? "true" : "false";
 		}
 
-		throw new UnsupportedOperationException("[QUERY EXECUTOR ERROR (de.dfki.asr.smartmaas.json.sparql.rdf.QueryExecutor)]"
-				+ " Query Type not yet supported");
+		// tempRepo.shutDown();
+		throw new UnsupportedOperationException("[QUERY EXECUTOR ERROR] (package de.dfki.asr.smartmaas.json.sparql.rdf.QueryExecutor)"
+				+ " Unsupported SPARQL Query type.");
+
 	}
 
-	private TupleQueryResult performTupleQuery(Model model, String query) {
-		/* TODO : Pass type of performed query and add support for Queries beyond SELECT*/
-
+	private RepositoryConnection connectToTempRepo(Model model) {
 		Repository tempRepo = new SailRepository(new MemoryStore());
 		tempRepo.initialize();
 		RepositoryConnection connection = tempRepo.getConnection();
 		connection.add(model);
+		return connection;
+	}
+
+	private TupleQueryResult performTupleQuery(RepositoryConnection connection, String query) {
 		TupleQuery sparqlQuery = connection.prepareTupleQuery(query);
-		TupleQueryResult result = sparqlQuery.evaluate();
-		// tempRepo.shutDown();
-		return result;
+		return sparqlQuery.evaluate();
+	}
+
+	private GraphQueryResult performGraphQuery(RepositoryConnection connection, String query) {
+		GraphQuery sparqlQuery = connection.prepareGraphQuery(query);
+		return sparqlQuery.evaluate();
+	}
+
+	private boolean performBooleanQuery(RepositoryConnection connection, String query) {
+		BooleanQuery sparqlQuery = connection.prepareBooleanQuery(query);
+		return sparqlQuery.evaluate();
 	}
 }
