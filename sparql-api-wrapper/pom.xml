@@ -104,5 +104,11 @@
             <version>0.2.3</version>
             <type>jar</type>
         </dependency>
+        <dependency>
+            <groupId>org.eclipse.rdf4j</groupId>
+            <artifactId>rdf4j-client</artifactId>
+            <version>2.5.1</version>
+            <type>jar</type>
+        </dependency>
     </dependencies>
 </project>
