@@ -64,6 +64,8 @@ public class ApplicationController {
 			switch (id) {
 				case "gbfs":
 					return readFileContent("gbfs_free_bikes_mapping.ttl");
+				case "station":
+					return readFileContent("gbfs_station_info.ttl");
 				default:
 					return readFileContent("mapping.ttl");
 			}
