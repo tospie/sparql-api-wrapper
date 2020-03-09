@@ -1,0 +1,51 @@
+@prefix rml: <http://semweb.mmlab.be/ns/rml#>.
+@prefix carml: <http://carml.taxonic.com/carml/> .
+@prefix rr: <http://www.w3.org/ns/r2rml#>.
+@prefix ql: <http://semweb.mmlab.be/ns/ql#>.
+@prefix wgs84_pos: <http://www.w3.org/2003/01/geo/wgs84_pos#>.
+@prefix gbfs:<https://github.com/amohoste/gbfs-linked/blob/master/linked_data/ontology.ttl#>.
+
+<#GbfsStationInformation>
+    rml:logicalSource [
+        rml:source [
+            a carml:Stream ;
+        ] ;
+        rml:referenceFormulation ql:JSONPath;
+        rml:iterator "$.data.stations"
+    ] ;
+
+    rr:subjectMap [
+        rr:template "http://foo.bar/stations/{@.station_id}" ;
+        rr:class gbfs:Station
+    ] ;
+
+    rr:predicateObjectMap [
+        rr:predicate gbfs:station_id ;
+        rr:objectMap [
+            rml:reference "@.station_id"
+        ]
+    ] ;
+
+	rr:predicateObjectMap [
+        rr:predicate gbfs:name ;
+        rr:objectMap [
+            rml:reference "@.name";
+			rr:datatype xsd:string
+        ]
+    ] ;
+
+    rr:predicateObjectMap [
+        rr:predicate wgs84_pos:lat ;
+        rr:objectMap [
+            rml:reference "@.lat" ;
+            rr:datatype xsd:double
+        ]
+    ] ;
+
+    rr:predicateObjectMap [
+        rr:predicate wgs84_pos:long ;
+        rr:objectMap [
+            rml:reference "@.lon" ;
+            rr:datatype xsd:double
+        ]
+    ] .

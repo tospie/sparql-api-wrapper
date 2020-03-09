@@ -1,0 +1,20 @@
+PREFIX rml: <http://semweb.mmlab.be/ns/rml#>
+PREFIX carml: <http://carml.taxonic.com/carml/>
+PREFIX rr: <http://www.w3.org/ns/r2rml#>
+PREFIX ql: <http://semweb.mmlab.be/ns/ql#>
+PREFIX wgs84_pos: <http://www.w3.org/2003/01/geo/wgs84_pos#>
+PREFIX gbfs:<https://github.com/amohoste/gbfs-linked/blob/master/linked_data/ontology.ttl#>
+
+SELECT ?bike ?name ?lat ?lon
+WHERE
+{
+  ?bike wgs84_pos:lat ?lat ;
+	 wgs84_pos:long ?lon .
+
+  SERVICE <http://localhost:8080/query/?mapping=http://localhost:8080/mapping/station&source=https://gbfs.nextbike.net/maps/gbfs/v1/nextbike_ff/de/station_information.json> {
+		?station gbfs:name ?name ;
+		wgs84_pos:lat ?station_lat;
+		wgs84_pos:long ?station_lon .
+  }
+  FILTER( ABS(?lat-?station_lat)<0.001 && ABS(?lon-?station_lon)<0.001)
+}
