@@ -15,6 +15,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,6 +34,7 @@ public class ApplicationController {
 
 	@GetMapping("/query")
 	String Query(HttpServletRequest request,
+			HttpServletResponse response,
 			@RequestParam("query") String query,
 			@RequestParam("mapping") String mappingUri,
 			@RequestParam("source") String sourceUri) {
@@ -40,8 +42,20 @@ public class ApplicationController {
 		String mapping = Builder.getContent(mappingUri);
 		String source = Builder.getContent(sourceUri);
 
+		response.setHeader("Content-Type", "application/sparql-results+xml");
 		Model mappedModel = carmlMapper.map(new Mapping(mapping, RDFFormat.TURTLE), new Data(source, Format.JSON));
-		return "<textarea rows=90 cols=250>" + new QueryExecutor().queryModel(mappedModel, query) + "</textarea>";
+		try {
+			byte[] queryResult = new QueryExecutor().queryModel(mappedModel, query);
+			return new String(queryResult, "UTF-8");
+		} catch (Exception e) {
+
+			return "[QUERY EXECUTION ERROR][ApplicationController.Query.GetMapping] An error occurred while executing the query : <br>"
+					+ e.getMessage() + ", <br>"
+					+ ", Cause: " + e.getCause().getMessage();
+
+		}
+	}
+
 	}
 
 	@GetMapping("/mapping/{id}")
