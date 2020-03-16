@@ -56,8 +56,6 @@ public class ApplicationController {
 		}
 	}
 
-	}
-
 	@GetMapping("/mapping/{id}")
 	String getMapping(@PathVariable String id) {
 		try {
