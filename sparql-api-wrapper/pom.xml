@@ -12,8 +12,49 @@
         <rdf4j.version>2.4.3</rdf4j.version>
     </properties>
     <name>sparql-api-wrapper</name>
-
-    <dependencies>
+	<repositories>
+		<repository>
+			<id>spring-releases</id>
+			<url>https://repo.spring.io/libs-release</url>
+		</repository>
+	</repositories>
+	<pluginRepositories>
+		<pluginRepository>
+			<id>spring-releases</id>
+			<url>https://repo.spring.io/libs-release</url>
+		</pluginRepository>
+	</pluginRepositories>
+	<build>
+		<plugins>
+			<plugin>
+			  <groupId>org.springframework.boot</groupId>
+			  <artifactId>spring-boot-maven-plugin</artifactId>
+			  <version>2.2.5.RELEASE</version>
+			  <configuration>
+				<archive>
+				  <manifest>
+					<mainClass>de.dfki.asr.smartmaas.json.sparql.Application</mainClass>
+				  </manifest>
+				</archive>
+				<!--
+				<descriptorRefs>
+				  <descriptorRef>src/main/assembly/jar-with-dependencies.xml</descriptorRef>
+				</descriptorRefs>
+				-->
+			  </configuration>
+			  <executions>
+				<execution>
+				  <!-- <id>make-assembly</id> --> <!-- this is used for inheritance merges -->
+				  <!-- <phase>package</phase> --> <!-- bind to the packaging phase -->
+				  <goals>
+					<goal>repackage</goal>
+				  </goals>
+				</execution>
+			  </executions>
+			</plugin>
+		</plugins>
+	</build>
+	<dependencies>
         <dependency>
             <!-- Import dependency management from Spring Boot -->
             <groupId>org.springframework.boot</groupId>
