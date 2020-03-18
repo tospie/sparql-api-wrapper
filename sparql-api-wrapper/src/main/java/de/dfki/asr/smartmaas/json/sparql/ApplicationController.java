@@ -13,9 +13,12 @@ import de.dfki.asr.smartmaas.json.sparql.mapping.Mapping;
 import de.dfki.asr.smartmaas.json.sparql.rdf.QueryExecutor;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringWriter;
 import java.nio.file.Files;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.commons.io.IOUtils;
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -84,8 +87,10 @@ public class ApplicationController {
 	}
 
 	String readFileContent(String fileName) throws IOException {
-		File file = new File(getClass().getClassLoader().getResource(fileName).getFile());
-		String content = new String(Files.readAllBytes(file.toPath()));
-		return content;
+	    InputStream resourceStream = getClass().getClassLoader().getResourceAsStream(fileName);
+	    StringWriter writer = new StringWriter();
+	    IOUtils.copy(resourceStream, writer);
+	    String content = writer.toString();
+	    return content;
 	}
 }
