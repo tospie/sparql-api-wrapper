@@ -26,34 +26,24 @@ public class QueryResultSerializer {
 
 	public <T extends QueryResult> byte[] serialize(T result) {
 		if (result instanceof TupleQueryResult) {
-			ByteArrayOutputStream output = new ByteArrayOutputStream();
-			TupleQueryResultWriter writer = new SPARQLResultsJSONWriter(output);
-			QueryResults.report((TupleQueryResult) result, writer);
-
-			return output.toByteArray();
-			//return serialize((TupleQueryResult) result);
+			return serialize((TupleQueryResult) result);
 		} else if (result instanceof GraphQueryResult) {
-			return new byte[0]; //serialize((GraphQueryResult) result);
+			return serialize((GraphQueryResult) result);
 		}
 
 		throw new UnsupportedOperationException("Not Yet Implemented");
 	}
 
-	private String serialize(TupleQueryResult result) {
-		String output = "";
+	private byte[] serialize(TupleQueryResult result) {
+			ByteArrayOutputStream output = new ByteArrayOutputStream();
+			TupleQueryResultWriter writer = new SPARQLResultsJSONWriter(output);
+			QueryResults.report((TupleQueryResult) result, writer);
 
-		while (result.hasNext()) {
-			BindingSet next = result.next();
-			output += "\n";
-			for (String n : next.getBindingNames()) {
-				output += "[" + n + ":" + next.getValue(n) + "]";
-			}
-		}
-		return output;
+			return output.toByteArray();
 	}
 
-	private String serialize(GraphQueryResult result) {
-		OutputStream output = new ByteArrayOutputStream();
+	private byte[] serialize(GraphQueryResult result) {
+		ByteArrayOutputStream output = new ByteArrayOutputStream();
 		RDFWriter rdfWriter = Rio.createWriter(RDFFormat.TURTLE,
 				output);
 
@@ -65,7 +55,7 @@ public class QueryResultSerializer {
 			rdfWriter.handleStatement(result.next());
 		}
 		rdfWriter.endRDF();
-		return output.toString();
+		return output.toByteArray();
 	}
 
 }
